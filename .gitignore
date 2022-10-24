@@ -1,0 +1,6 @@
+scratch.txt
+/venv
+/'applications OAuth json'
+*creds.*
+.env
+*_secret*

@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block body %}
+<div style="padding:20px;">
+    <div>
+        <h2>{{ error_message_title }}</h2>
+    </div>
+    <div style="border-bottom: 1px solid #cccccc;height:1px;clear: left; padding-top:40px; margin-bottom: 40px;;"></div>
+    <div style="padding-bottom: 40px;width:100%;max-width:750px;">
+        {{ error_message }}
+    </div>
+    <a class="btn btn-primary" href={{ error_message_url_for }} role="button" target={{ error_button_link_target }}>{{ error_button_label }}</a>
+</div>
+{% endblock %}

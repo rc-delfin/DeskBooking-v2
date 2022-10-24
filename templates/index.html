@@ -1,0 +1,158 @@
+{% extends 'base.html' %} {% block body %}
+<style>
+    ul{
+        list-style-type: none;
+    }
+    ul,li { list-style-type: none;
+        list-style-position:inside;
+        margin:0;
+        padding:0;
+    }
+    ul > li {
+        padding-bottom:10px;
+        padding-left:40px;
+    }
+    input[type=radio] {
+        border: 0;
+        width: 1.5em;
+        height: 1.5em;
+        float:left;
+        margin-right:5px;
+    }
+    #index_page{
+        font-size:1em;
+    }
+</style>
+
+<div id="index_page">
+    <div style="margin-bottom:40px;">
+        <div style="border:2px solid #dcdcdc;border-radius:500px;width:100px;height:100px;float: left;margin-right: 20px;">
+            <img src={{picture}} style="border-radius:500px;">
+        </div>
+        <div style="float:left">
+            <h5>
+                <div class="badge rounded-pill bg-success"> {{ name }} </div>
+            </h5>
+            <h5>
+                <div class="badge rounded-pill bg-success"> {{ email }} </div>
+            </h5>
+<!--            <h5>-->
+<!--                <div class="badge rounded-pill bg-success"> {{ resno }} </div>-->
+<!--            </h5>-->
+        </div>
+        <div style="border-bottom: 1px solid #cccccc;height:1px;clear: left; padding-top:40px;"></div>
+    </div>
+
+    <form action="{{ url_for('landing_page') }}" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.booking_date.label(style="margin-bottom:10px;font-size:1.3em;font-weight:300;") }} <br>
+        {{ form.booking_date(style="border-radius:4px;border:1px solid #aaaaaa;padding:8px 10px;margin-left:40px;") }} <br><br>
+        {{ form.booking_time.label(style="margin-bottom:10px;font-size:1.3em;font-weight:300;") }} <br>
+        {{ form.booking_time(style="font-size:1em;") }}<br>
+<!--        {{ form.submit(class="btn btn-primary btn-lg", id="confirmation-modal-submit", onclick="assignTimes()") }}-->
+        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+            style="margin-top:20px;"
+            onclick="assignTimes()">
+            Submit
+        </button>
+
+<!--        Modal confirmation -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:280px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">DeskBooking</h5>
+<!--                        <button id="modal-close-button" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                    </div>
+
+                    <div class="modal-body" id="modal-body">
+                        <div id="modal_div_booking_date"></div>
+                        <div id="modal_div_booking_time"></div>
+                    </div>
+                    <div id="spinner" class="spinner-border text-primary" role="status" style="display:none;margin:0 auto 15px;padding-bottom:15px;">
+                        <span class="sr-only"></span>
+                    </div>
+
+                    <div class="modal-footer" id="modal-footer" style="padding-top: 20px;">
+                        <div id="modal-submit">{{ form.submit(class="btn btn-primary btn-lg",
+                            id="confirmation-modal-submit") }}</div>
+                        <button id="modal-cancel" type="button" class="btn btn-secondary btn-lg"
+                            data-bs-dismiss="modal">Cancel</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="notif" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">DeskBooking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function assignTimes() {
+        document.getElementById('modal_div_booking_date').innerHTML = "Booking date: " + formatCalDate(document.getElementById("booking_date").value);
+        document.getElementById('modal_div_booking_time').innerHTML = "Booking time: " + $('input[name=booking_time]:checked').val();
+    }
+
+    // CLOSES CONFIRMATION BOX UPON CLICKING ON SUBMIT
+    document.getElementById("confirmation-modal-submit").addEventListener("click", function () {
+        document.getElementById("modal-footer").style.display = "none";
+        document.getElementById("modal-body").innerHTML = "Checking availability";
+        document.getElementById("spinner").style.display = "block";
+        // document.getElementById("modal-close-button").style.display = "none";
+    });
+
+    // formatCalDate FUNCTION USED ABOVE
+    function formatCalDate(rawDate) {
+        var date = new Date(rawDate);
+
+        var monthNames = [
+            "Jan", "Feb", "Mar",
+            "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct",
+            "Nov", "Dec"
+        ];
+
+        var day = date.getDate();
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+
+        if (day < 10) {
+            day = '0' + day;
+        }
+
+        return day + " " + monthNames[monthIndex] + " " + year;
+    }
+
+    /* Trigger flash modal */
+    $(document).ready(function() {
+        var messages = "{{ get_flashed_messages() }}";
+        if (typeof messages != 'undefined' && messages != '[]') {
+            $("#notif").modal("show");
+        };
+    });
+</script>
+{% endblock %}
