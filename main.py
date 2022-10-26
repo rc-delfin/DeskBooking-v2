@@ -13,14 +13,22 @@ from flask import (
 from flask_dance.contrib.google import make_google_blueprint, google
 
 from oauthlib.oauth2.rfc6749.errors import InvalidClientIdError, TokenExpiredError
-from dotenv import load_dotenv
 from scripts import forms, gsmod
 # from gspread.exceptions import APIError, GSpreadException
 
 from scripts.gsmod import short_date_to_long as short_to_long, check_duplicate_booking, check_date, book_whole_day, book_half_day, location_to_str
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-load_dotenv()
+# where the script starts
+os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
+isAWS = "AWS_LAMBDA_FUNCTION_NAME" in os.environ
+if isAWS:
+    pass
+else:
+    # settings when run locally
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
 
 def _empty_session():
@@ -103,9 +111,9 @@ def landing_page():
         credentials_dict = json.loads(google_credentials, strict=False)
         gc = gspread.service_account_from_dict(credentials_dict)
 
-        # Open bookings sheetq
+        # Open bookings sheet
         wks_ledger = gc.open_by_key(ledger_gs).sheet1
-        print("...sheet opened")
+        print("...sheet opened: " + ledger_gs)
 
         staff = booking_data["email"]
         reservation_date = datetime.date.strftime(booking_data["date"], "%m/%d/%y")
