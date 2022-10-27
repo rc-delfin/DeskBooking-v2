@@ -5,3 +5,4 @@ scratch.txt
 .env
 *_secret*
 zappa_settings.json
+.idea
