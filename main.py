@@ -13,7 +13,7 @@ from flask import (
 from flask_dance.contrib.google import make_google_blueprint, google
 
 from oauthlib.oauth2.rfc6749.errors import InvalidClientIdError, TokenExpiredError
-from scripts import forms, gsmod
+from scripts import forms, parmesan as parm
 # from gspread.exceptions import APIError, GSpreadException
 
 from scripts.gsmod import short_date_to_long as short_to_long, check_duplicate_booking, check_date, book_whole_day, book_half_day, location_to_str
@@ -43,6 +43,23 @@ def _empty_session():
 
 
 app = Flask(__name__)
+
+if not isAWS:
+    # running locally, get these from .env
+    google_client_id = os.environ["GOO_CLIENT"]
+    google_client_secret = os.environ["GOO_SHH"]
+    google_credentials = os.environ["GOO_CREDS"]
+    flask_app_skey = os.environ["FLASK_SECRET_KEY"]
+else:
+    # running in AWS, get these vars from AWS parameter store
+    parm_path = os.environ["PARM_PATH"]
+    # g1 = parm.AWSparms(path=parm_path, decrypt=True)
+    g1 = parm.AWSparms(path=os.environ["PARM_PATH"], decrypt=True)
+    google_client_id = g1.get_parm("google_client_id")
+    google_client_secret = g1.get_parm("google_client_secret")
+    google_credentials = g1.get_parm("google_service_acct")
+    flask_app_skey = g1.get_parm("flask_app_skey")
+
 app.config["SECRET_KEY"] = "123456789asdfghjkl#A"
 
 back_home = os.environ.get("BACK_HOME")
@@ -106,7 +123,7 @@ def landing_page():
         print(booking_data["email"] + "/" + str(booking_data["date"]) + "/" + booking_data["time"])
 
         # gsheet ops
-        google_credentials = os.environ["GOO_CREDS"]
+        # google_credentials = os.environ["GOO_CREDS"]
         ledger_gs = os.environ["LEDGERV2_ID"]
         credentials_dict = json.loads(google_credentials, strict=False)
         gc = gspread.service_account_from_dict(credentials_dict)

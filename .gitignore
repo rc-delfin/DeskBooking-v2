@@ -4,3 +4,4 @@ scratch.txt
 *creds.*
 .env
 *_secret*
+zappa_settings.json

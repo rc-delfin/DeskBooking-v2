@@ -40,3 +40,6 @@ Werkzeug==2.2.1
 wrapt==1.14.1
 WTForms==3.0.1
 zipp==3.8.1
+
+boto3~=1.25.1
+botocore~=1.28.1
