@@ -159,7 +159,7 @@ def landing_page():
                     flash(f"ERROR: Sorry, no more desks available for {long_reservation_date} ({time_of_day})")
             else:
                 flash(
-                    f"ERROR: Your requested date {long_reservation_date} is not a valid booking date - acceptable dates are from today to two (2) days ahead only")
+                    f"ERROR: Your requested date {long_reservation_date} is not a valid booking date - acceptable dates are from today to two (2) working days ahead only")
     return render_template(
         'index.html',
         name=booking_data["name"],
